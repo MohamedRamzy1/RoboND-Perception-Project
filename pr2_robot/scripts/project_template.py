@@ -48,15 +48,15 @@ def send_to_yaml(yaml_filename, dict_list):
 
 # Callback function for your Point Cloud Subscriber
 def pcl_callback(pcl_msg):
-    # TODO: Convert ROS msg to PCL data
+    #Convert ROS msg to PCL data
     pc = ros_to_pcl(pcl_msg)
 
-    # TODO: Voxel Grid Downsampling
+    #Voxel Grid Downsampling
     vox = pc.make_voxel_grid_filter()
     LEAF_SIZE = 0.005
     vox.set_leaf_size(LEAF_SIZE, LEAF_SIZE, LEAF_SIZE)
     pc = vox.filter()
-    # TODO: PassThrough Filter
+    #PassThrough Filter
     filter_axis = 'z'
     pass_through_z = pc.make_passthrough_filter()
     pass_through_z.set_filter_field_name(filter_axis)
@@ -80,17 +80,17 @@ def pcl_callback(pcl_msg):
     outlier_filter.set_std_dev_mul_thresh(x)
 
     pc = outlier_filter.filter()
-    # TODO: RANSAC Plane Segmentation
+    #RANSAC Plane Segmentation
     segmenter = pc.make_segmenter()
     segmenter.set_model_type(pcl.SACMODEL_PLANE)
     segmenter.set_method_type(pcl.SAC_RANSAC)
     max_distance = 0.015
     segmenter.set_distance_threshold(max_distance)
-    # TODO: Extract inliers and outliers
+    #Extract inliers and outliers
     inliers, coefficients = segmenter.segment()
     ros_cloud_objects = pc.extract(inliers, negative=True)
     ros_cloud_table = pc.extract(inliers, negative=False)
-    # TODO: Euclidean Clustering
+    #Euclidean Clustering
     white_cloud = XYZRGB_to_XYZ(ros_cloud_objects)
     tree = white_cloud.make_kdtree()
     ec = white_cloud.make_EuclideanClusterExtraction()
@@ -100,7 +100,7 @@ def pcl_callback(pcl_msg):
     ec.set_SearchMethod(tree)
     cluster_indices = ec.Extract()
     cluster_color = get_color_list(len(cluster_indices))
-    # TODO: Create Cluster-Mask Point Cloud to visualize each cluster separately
+    #Create Cluster-Mask Point Cloud to visualize each cluster separately
     color_cluster_point_list = []
 
     for j, indices in enumerate(cluster_indices):
@@ -113,9 +113,9 @@ def pcl_callback(pcl_msg):
     #Create new cloud containing all clusters, each with unique color
     cluster_cloud = pcl.PointCloud_PointXYZRGB()
     cluster_cloud.from_list(color_cluster_point_list)
-    # TODO: Convert PCL data to ROS messages
+    #Convert PCL data to ROS messages
     ros_cluster_cloud = pcl_to_ros(cluster_cloud)
-    # TODO: Publish ROS messages
+    #Publish ROS messages
     pcl_objects_pub.publish(pcl_to_ros(ros_cloud_objects))
     pcl_table_pub.publish(pcl_to_ros(ros_cloud_table))
     pcl_segmentation_pub.publish(ros_cluster_cloud)
@@ -172,7 +172,7 @@ def pr2_mover(object_list):
 
     # TODO: Initialize variables
     TEST_SCENE_NUM = Int32()
-    TEST_SCENE_NUM.data = 1
+    TEST_SCENE_NUM.data = 2
     OBJECT_NAME = String()
     WHICH_ARM = String()
     PICK_POSE = Pose()
@@ -204,7 +204,7 @@ def pr2_mover(object_list):
                 PICK_POSE.position.z = float(centroid[2])
             # Assign the arm to be used for pick_place
                 PLACE_POSE.position.x = 0.0
-                PLACE_POSE.position.z = 0.606
+                PLACE_POSE.position.z = 0.605
 
                 if (object_list_param[i]['group'] == "red"):
                     WHICH_ARM.data = "left"            
@@ -217,7 +217,7 @@ def pr2_mover(object_list):
                 dic_yaml = make_yaml_dict(TEST_SCENE_NUM,WHICH_ARM,OBJECT_NAME,PICK_POSE,PLACE_POSE)
                 dict_list.append(dic_yaml)
         # Wait for 'pick_place_routine' service to come up
-        """
+
         rospy.wait_for_service('pick_place_routine')
         
         try:
@@ -230,10 +230,9 @@ def pr2_mover(object_list):
 
         except rospy.ServiceException, e:
             print "Service call failed: %s"%e
-        """
 
     # TODO: Output your request parameters into output yaml file
-    print(dict_list)
+
     send_to_yaml("output_{}.yaml".format(TEST_SCENE_NUM.data), dict_list)
 
 
