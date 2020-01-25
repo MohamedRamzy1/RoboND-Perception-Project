@@ -112,6 +112,8 @@ You're reading it!
     pcl_segmentation_pub.publish(ros_cluster_cloud)
 #### 2. Complete Exercise 3 Steps.  Features extracted and SVM trained.  Object recognition implemented.
 
+![](imgs/confusion.png) 
+
 
     def compute_color_histograms(cloud, using_hsv=False):
 
@@ -230,9 +232,9 @@ You're reading it!
 
 #### 1. For all three tabletop setups (`test*.world`), perform object recognition, then read in respective pick list (`pick_list_*.yaml`). Next construct the messages that would comprise a valid `PickPlace` request output them to `.yaml` format.
 
-![](/home/mohamed/imgs/test1.png) 
-![](/home/mohamed/imgs/test2.png) 
-![](/home/mohamed/imgs/test3.png) 
+![](imgs/test1.png) 
+![](imgs/test2.png) 
+![](imgs/test3.png) 
 
 
 
